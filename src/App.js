@@ -2,8 +2,7 @@ import React, {useMemo, useState} from "react";
 import './styles/App.css'
 import PostList from "./Components/PostList";
 import Form from "./Components/Form";
-import MySelect from "./Components/UI/select/MySelect";
-import MyInput from "./Components/UI/input/MyInput";
+import PostFilter from "./Components/PostFilter";
 
 function App() {
     const [posts, setPosts] = useState([
@@ -12,23 +11,23 @@ function App() {
         {id: 3, title: "вв", body: "тест 2"},
     ])
 
-    const [selectedSort, setSelectedSort] = useState("");
-    const [searchQuery, setSeacrhQuery] = useState("");
+    const [filter, setFilter] = useState({sort: '', query: ''});
     const sortedPosts = useMemo(() => {
         console.log("Use memo in sorted posts has worked");
-        if (selectedSort) {
+        if (filter.sort) {
             return [...posts].sort( (firstItem, secondItem) =>
-                firstItem[selectedSort].localeCompare(secondItem[selectedSort]));
+                firstItem[filter.sort].localeCompare(secondItem[filter.sort]));
         } else {
             return posts;
         }
-    }, [selectedSort, posts]);
+    }, [filter.sort, posts]);
 
     const sortedAndSearchedPosts = useMemo(()=>{
+        console.log("Searched and sorted posts has worked");
         return sortedPosts.filter((post)=>{
-            return post.title.includes(searchQuery.toLowerCase());
+            return post.title.toLowerCase().includes(filter.query.toLowerCase());
         });
-    },[searchQuery, sortedPosts]);
+    },[filter.query, sortedPosts]);
 
     function createPost(newPost) {
         setPosts([...posts, newPost]);
@@ -37,35 +36,11 @@ function App() {
     function removePost(post) {
         setPosts(posts.filter((item) => post.id !== item.id))
     }
-
-    const sortPosts = (sort) => {
-        setSelectedSort(sort);
-        let sortedArr = [...posts].sort((firstItem, secondItem) =>
-            firstItem[sort].localeCompare(secondItem[sort]));
-        setPosts(sortedArr);
-    }
-
     return (
         <div className="App">
             <Form create={createPost}/>
             <hr style={{margin: "15px 0"}}/>
-            <div>
-                <MyInput
-                    value={searchQuery}
-                    onChange={event => {
-                        setSeacrhQuery(event.target.value)
-                    }}
-                />
-                <MySelect
-                    value={selectedSort}
-                    onChange={sortPosts}
-                    defaultValue="Сортировка"
-                    option={[
-                        {value: 'title', name: 'По заголовку'},
-                        {value: 'body', name: 'По описанию'}
-                    ]}
-                />
-            </div>
+            <PostFilter filter={filter} setFilter={setFilter}/>
             {sortedAndSearchedPosts.length !== 0
                 ? <PostList posts={sortedAndSearchedPosts} title="Посты про JS" remove={removePost}/>
                 : <h1 style={{textAlign: "center"}}>
