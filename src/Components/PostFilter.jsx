@@ -1,4 +1,4 @@
-import React from 'react';
+    import React from 'react';
 import MyInput from "./UI/input/MyInput";
 import MySelect from "./UI/select/MySelect";
 
@@ -13,7 +13,7 @@ const PostFilter = ({filter,setFilter}) => {
             />
             <MySelect
                 value={filter.sort}
-                onChange={(selectedSort)=>{ setFilter({...filter, sort: selectedSort})}}
+                onChange={(selectedSort)=>setFilter({...filter, sort: selectedSort})}
                 defaultValue="Сортировка"
                 option={[
                     {value: 'title', name: 'По заголовку'},
